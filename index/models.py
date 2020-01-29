@@ -1,9 +1,11 @@
 from django.db import models
 
-
 # Create your models here.
 
 # 产品分类表
+from django.db.models import Q, Sum, Count
+
+
 class Type(models.Model):
     id = models.AutoField(primary_key=True)
     type_name = models.CharField(max_length=20)
@@ -46,7 +48,6 @@ class Program(models.Model):
     name = models.CharField(max_length=20)
 '''
 
-
 # 多对多关系，通过ManyToManyField构建,只需写两个表，关系表会自动生成
 '''
 class Performer(models.Model):
@@ -60,3 +61,52 @@ class Program(models.Model):
     name = models.CharField(max_length=20)
 '''
 
+# 数据插入，create()
+Product.objects.create(name='荣耀V9', weight='110g', size='120*75*7mm', type_id=1)
+
+# 数据更新，filter()进行筛选，update()进行更新
+Product.objects.filter(name='荣耀V9').update(name='华为荣耀V9')
+
+# 数据删除
+# 删除表中全部数据
+Product.objects.all().delete()
+# 删除一条id为1的数据
+Product.objects.get(id=1).delete()
+# 删除多条数据
+Product.objects.filter(name='华为荣耀V9')
+
+# 数据查询
+# 全表查询
+Product.objects.all()
+# 查询前五条
+Product.objects.all()[:5]
+# 查询某字段
+Product.objects.values('name')
+# 以列表方式返回数据，列表元素以元组表示
+Product.objects.values_list('name')[:3]
+# get方法查询，查询字段只能为主键或唯一约束字段
+Product.objects.get(id=1)
+# filter方法查询
+Product.objects.filter(id=1)
+# SQL中的and查询主要在filter中添加多个查询条件
+Product.objects.filter(name='华为荣耀V9', id=1)
+# SQL中的or查询需要引入Q，格式：Q(field=value)|Q(field=value)
+# from django.db.models import Q
+Product.objects.filter(Q(name='华为荣耀V9') | Q(id=1))
+# 去重查询(根据values）
+Product.objects.values('name').filter('华为荣耀V9').distinct()
+# 降序查询
+Product.objects.order_by('-id')
+# 聚合查询，实现对数据的求和、求平均等
+# annotate类似于GROUP BY，不设values则默认对主键操作
+Product.objects.values('name').annotate(Sum('id'))
+# aggregate是将某个字段的值进行计算并只返回计算结果
+Product.objects.aggregate(id_count=Count('id'))
+
+# 多表查询
+# 设查询主体为Type
+# 正向查询
+Type.objects.filter(product__id=11)
+# 反向查询
+t = Type.objects.filter(product__id=11)
+t[0].product_set.values('name')
