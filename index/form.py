@@ -1,5 +1,7 @@
 from django import forms
 from .models import *
+from django.core.exceptions import ValidationError
+
 '''
 内置表单字段：
 BooleanField：复选框
@@ -27,16 +29,26 @@ Initial：设初值
 help_text：设置帮助提示信息
 error_messages：设置错误信息，以字典形式表示：{'required':'不能为空','invalid':'格式错误'}
 show_hidden_initial：值为True/False，是否在当前插件后面再加一个隐藏的且具有默认值的插件（检验两次输入值是否一致）
-Validators：自定义数据验证规则。以列表格式表示，列表元素为函数名
+Validators：自定义数据验证规则。以list格式表示，list元素为函数名
 Localize：值为True/False，是否支持本地化（不同时区显示相应的时间）
 Disabled：值为True/False，是否可以编辑
 label_suffix：Label内容后缀，在Label后添加内容
 '''
-class ProductForm(forms.Form):
-    name = forms.CharField(max_length=20,label='名字')
-    weight = forms.CharField(max_length=20,label='重量')
-    size = forms.CharField(max_length=50,label='尺寸')
 
-    #下拉框
-    choices_list = [(i+1,v['type_name']) for i,v in enumerate(Type.objects.values('type_name'))]
-    type =forms.ChoiceField(choices=choices_list,label='产品类型')
+
+def weight_validate(value):
+    if not str(value).isdigit():
+        raise ValidationError('请输入正确的重量')
+
+
+class ProductForm(forms.Form):
+    # 设置错误信息并设置样式
+    name = forms.CharField(max_length=20, label='名字', widget=forms.widgets.TextInput(attrs={'class': 'c1'}),
+                           error_messages={'required': '名字不能为空'})
+    weight = forms.CharField(max_length=20, label='重量', validators=[weight_validate])
+    size = forms.CharField(max_length=50, label='尺寸')
+
+    # 下拉框
+    choices_list = [(i + 1, v['type_name']) for i, v in enumerate(Type.objects.values('type_name'))]
+    type = forms.ChoiceField(widget=forms.widgets.Select(attrs={'class': 'type', 'size': '4'}), choices=choices_list,
+                             label='产品类型')
