@@ -54,8 +54,18 @@ class ProductForm(forms.Form):
                              label='产品类型')
 
 class ProductModelForm(forms.ModelForm):
+    #重写表单初始化函数
+    def __init__(self,*args,**kwargs):
+        super(ProductModelForm,self).__init__(*args,**kwargs)
+        #设置下拉框数据
+        type_obj = Type.objects.values('type_name')
+        choices_list = [(i+1,v['type_name']) for i, v in enumerate(type_obj)]
+        self.fields['type'].choices = choices_list
+        #初始化字段name
+        self.fields['name'].initial = '我的手机'
+    #定义表单时，设置参数initial
     # 添加模型外的表单字段
-    productId = forms.CharField(max_length=20, label='产品序号')
+    productId = forms.CharField(max_length=20, label='产品序号',initial='NO1')
 
     # 类Meta的属性说明
     # model：必需属性，绑定Model对象
