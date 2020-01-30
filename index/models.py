@@ -61,6 +61,7 @@ class Program(models.Model):
     name = models.CharField(max_length=20)
 '''
 
+'''
 # 数据插入，create()
 Product.objects.create(name='荣耀V9', weight='110g', size='120*75*7mm', type_id=1)
 
@@ -110,3 +111,4 @@ Type.objects.filter(product__id=11)
 # 反向查询
 t = Type.objects.filter(product__id=11)
 t[0].product_set.values('name')
+'''
