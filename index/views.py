@@ -31,6 +31,15 @@ class ProductModelForm(forms.ModelForm):
     # 添加模型外的表单字段
     productId = forms.CharField(max_length=20, label='产品序号')
 
+    # 类Meta的属性说明
+    # model：必需属性，绑定Model对象
+    # fields：必须属性，设置哪些字段转换成表单字段
+    # exclude：可选属性，禁止哪些字段转换成表单字段
+    # labels：可选属性，设置表单字段的参数label
+    # widgets：可选属性，设置表单字段的参数widget
+    # field_classes：可选属性，将模型的字段类型重新定义为表单字段类型
+    # help_texts：可选属性，设置表单字段的参数help_text
+    # error_messages：可选属性，设置表单字段的参数error_messages
     # 模型与表单设置
     class Meta:
         # 绑定模型
@@ -68,6 +77,8 @@ class ProductModelForm(forms.ModelForm):
             'weight': {'required': '请输入重量数值', 'invalid': '请检查数值是否正确'}
         }
 
+    # 自定义表单字段weight的数据清洗
     def clean_weight(self):
+        # 获取数据
         data = self.cleaned_data['weight']
         return data + 'g'
