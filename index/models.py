@@ -4,6 +4,7 @@ from django.db import models
 
 # 产品分类表
 from django.db.models import Q, Sum, Count
+from django.utils.html import format_html
 
 
 class Type(models.Model):
@@ -24,11 +25,29 @@ class Product(models.Model):
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.type_name
+        return self.name
 
     class Meta:
         verbose_name = '产品信息'
         verbose_name_plural = '产品信息'
+
+    # 自定义函数，设置字体颜色
+    def colored_type(self):
+        if '手机' in self.type.type_name:
+            color_code = 'red'
+        elif '平板电脑' in self.type.type_name:
+            color_code = 'blue'
+        elif '智能穿戴' in self.type.type_name:
+            color_code = 'green'
+        else:
+            color_code = 'yellow'
+        return format_html(
+            '<span style ="color:{}">{}</span>',
+            color_code,
+            self.type
+        )
+
+    colored_type.short_description = '带颜色的产品类型'
 
 
 # 一对一关系，通过OneToOneField构建
