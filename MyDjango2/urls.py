@@ -20,7 +20,8 @@ from index import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # 首页
-    path('', views.index),
-    path('<int:id>.html', views.models_index),
+    # path('', views.index),
+    # path('<int:id>.html', views.models_index),
+    path('', include('index.urls')),
+    path('user/',include('user.urls'))
 ]
