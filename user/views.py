@@ -1,3 +1,5 @@
+from random import random
+
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
@@ -98,3 +100,36 @@ def serpasswordView_1(request):
 def logoutView(request):
     logout(request)
     return redirect('/')
+
+#邮箱找回密码
+def findPasswordView(request):
+    button = '获取验证码'
+    new_password =False
+    if request.method =='POST':
+        username = request.POST.get('username','')
+        VerificationCode = request.POST.get('VerificationCode','')
+        password = request.POST.get('password','')
+        user = User.objects.filter(username=username)
+        if not user:
+            tips = '用户 '+ username + ' 不存在'
+        else:
+            if not request.POST.get('VerificationCode',''):
+                #发送验证码并将验证码写入session
+                button = '重置验证码'
+                tips= '验证码已发送'
+                new_password=True
+                VerificationCode = str(random.randint(1000,9999))
+                request.session['VerificationCode'] = VerificationCode
+                user[0].email_user('找回密码',VerificationCode)
+            elif VerificationCode == request.session.get('VerificationCode',''):
+                #密码加密保存
+                dj_ps = make_password(new_password, None, 'pbkdf2_sha256')
+                user[0].password = dj_ps
+                user[0].save()
+                del request.session['VerificationCode']
+                tips = '密码已重置'
+            else:
+                tips = '验证码错误，请重试'
+                new_password=False
+                del request.session['VerificationCode']
+    return render(request,'user.html',locals())

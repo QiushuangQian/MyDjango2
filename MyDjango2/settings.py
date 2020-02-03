@@ -121,3 +121,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# 设置邮箱找回密码
+# 邮件配置信息 设置Django与邮件服务器的连接方式为SSL
+EMAIL_USE_SSL = True
+# 邮件服务器 服务器使用SMTP
+EMAIL_HOST = 'smtp.qq.com'
+# 邮件服务器端口 使用SMTP则端口为465或587
+EMAIL_PORT = 465
+# 发送邮件的账号 该账号必须开通POP3/SMTP服务
+EMAIL_HOST_USER = '805595524@qq.com'
+# SMTP服务密码 开启服务后获得的授权密码
+EMAIL_HOST_PASSWORD = 'kqmrntnrnhsrbbbe'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
